@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="bonitastandalone" default="deploy">
+
+    <property file="build.properties"/>
+    <property name="projectName" value="${project.name}"/>
+
+    <tstamp>
+        <format property="TODAY_UK" pattern="yyyy-MM-dd" locale="en,UK"/>
+    </tstamp>
+
+    <path id="dirFolderProject">
+        <pathelement location="${path.home.projet}/${project.dirName}"/>
+    </path>
+
+    <target name="tomcat-start">
+        <java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
+            <jvmarg value="-Dcatalina.home=${tomcat.home}"/>
+        </java>
+    </target>
+
+    <target name="tomcat-stop">
+        <java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
+            <jvmarg value="-Dcatalina.home=${tomcat.home}"/>
+            <arg line="stop"/>
+        </java>
+    </target>
+
+    <target name="debugEnable">
+        <echo>Edit dir : ${pathFile.custom.debug}</echo>
+        <replace file="${pathFile.custom.debug}">
+            <replacefilter token="custom.page.debug                       false" value="custom.page.debug                       true"/>
+        </replace>
+        <echo>You must restart serveur.</echo>
+    </target>
+
+    <target name="importLibExt">
+        <copy todir="lib\\">
+            <fileset dir="${path.import.libExt.happyLib}">
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="deploy" depends="importLibExt" description="deploy the custom page in tenant live.">
+        <echo>Delete dir : ${path.page.deploy}/${project.dirName}</echo>
+        <delete dir="${path.page.deploy}/${deploy.dirName}" failonerror="false"/>
+
+        <echo>Create dir : ${path.page.deploy}/${project.dirName}</echo>
+        <mkdir dir="${path.page.deploy}/${deploy.dirName}" />
+
+        <echo>Copy dir : ${path.home.projet}/${project.dirName}</echo>
+        <copy todir="${path.page.deploy}/${deploy.dirName}">
+            <fileset dir="${path.home.projet}/${project.dirName}">
+                <exclude name="**/.idea/"/>
+                <exclude name="**/libAlreadyInBonita/"/>
+                <exclude name="**/src/"/>
+                <exclude name="**/*.iml"/>
+                <exclude name="**/build.properties"/>
+                <exclude name="**/build.xml"/>
+                <exclude name="**/pom.xml"/>
+                <exclude name="**/*.impl"/>
+            </fileset>
+        </copy>
+
+        <antcall target="importLibExt"/>
+    </target>
+
+    <target name="zip" depends="importLibExt" description="create zip for portal">
+        <echo>Delete dir : /build/zip/</echo>
+        <delete dir="${path.home.projet}/${project.dirName}/build/zip/" failonerror="false"/>
+
+        <echo>Create dir : /build/zip/</echo>
+        <mkdir dir="${path.home.projet}/${project.dirName}/build/zip/" />
+
+        <echo>Copy dir : ${path.home.projet}/${project.dirName}</echo>
+        <zip destfile="${path.home.projet}/${project.dirName}/build/zip/${project.dirName}_${TODAY_UK}.zip">
+                <fileset dir="${path.home.projet}/${project.dirName}">
+                <exclude name="**/.idea/"/>
+                <exclude name="**/libAlreadyInBonita/"/>
+                <exclude name="**/src/"/>
+                <exclude name="**/*.iml"/>
+                <exclude name="**/build.properties"/>
+                <exclude name="**/build.xml"/>
+                <exclude name="**/pom.xml"/>
+                <exclude name="**/*.iml"/>
+            </fileset>
+        </zip>
+
+        <antcall target="importLibExt"/>
+    </target>
+</project>

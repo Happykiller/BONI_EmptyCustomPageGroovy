@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="libAlreadyInBonita">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/libAlreadyInBonita" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/libAlreadyInBonita" recursive="false" />
+  </library>
+</component>
